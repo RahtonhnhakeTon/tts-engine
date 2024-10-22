@@ -3,6 +3,18 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "webpack": true
+  },
+  "projects": {
+    "tts-vendors": {
+      "type": "library",
+      "root": "libs/tts-vendors",
+      "entryFile": "index",
+      "sourceRoot": "libs/tts-vendors/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/tts-vendors/tsconfig.lib.json"
+      }
+    }
   }
 }
