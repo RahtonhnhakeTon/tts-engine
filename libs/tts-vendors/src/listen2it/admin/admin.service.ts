@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { AxiosHeaders } from 'axios';
 import { join } from 'path';
 import { admin as adminApiReference } from '../api-reference.json';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class AdminService extends Client {
@@ -26,11 +27,20 @@ export class AdminService extends Client {
     }
   }
 
-  createWorkspace(body: l2i_CreateOrEditWorkspaceDto) {
-    return this._send(adminApiReference.workspace.default, {
+  async createWorkspace(body: l2i_CreateOrEditWorkspaceDto) {
+    if(! (await this._is_body_valid(body)))
+      return false;
+
+    const response = await this._send(adminApiReference.workspace.default, {
       method: 'post',
       payload: body,
     });
+
+    if(response.success) {
+      return response.data;
+    }
+
+    return false;
   }
 
   deleteWorkspace(id: string) {

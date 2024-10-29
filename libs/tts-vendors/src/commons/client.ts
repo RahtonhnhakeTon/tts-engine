@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { AxiosRequestConfig } from 'axios';
 import { join } from 'path';
 import { lastValueFrom } from 'rxjs';
+import {validate} from "class-validator";
 
 @Injectable()
 export class Client {
@@ -38,6 +39,15 @@ export class Client {
         .pipe(),
     );
 
-    return response;
+    return response.data;
+  }
+
+  protected async _is_body_valid(body: any) {
+      const errors = await validate(body);
+      if (errors.length > 0) {
+          console.log("validation failed. errors: ", errors);
+          return false;
+      }
+      return true;
   }
 }
