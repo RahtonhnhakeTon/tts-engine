@@ -1,0 +1,24 @@
+POST https://japhrdeu2j.execute-api.us-east-1.amazonaws.com/staging/admin/workspace
+Content-Type: application/json
+x-api-key: 345678
+workspace-id: b4RS8QbYns
+
+{
+  "name":"TEST-TAN",
+  "max_characters":20000000,
+  "account_id":6669,
+  "email":"ten.tan@gmail.com",
+  "first_name":"Romit",
+  "last_name": "Taneja",
+  "speech_plan":"standard"
+}
+
+{
+  "success": true,
+  "data": {
+    "id": "AyNfoVq9yM",
+    "name": "TEST-TAN",
+    "max_characters": 20000000,
+    "subscription_status": "active"
+  }
+}
