@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { WorkspaceService } from './workspace.service';
+import { WorkspaceService } from './workspace/workspace.service';
 import { HttpModule } from "@nestjs/axios";
+import {AdminService} from "@app/tts-vendors/listen2it/admin/admin.service";
 
 @Module({
   imports: [
@@ -8,7 +9,7 @@ import { HttpModule } from "@nestjs/axios";
           timeout: 10000,
       })
   ],
-  providers: [WorkspaceService],
-  exports: [WorkspaceService]
+  providers: [WorkspaceService, AdminService],
+  exports: [WorkspaceService, AdminService]
 })
 export class Listen2itModule {}
