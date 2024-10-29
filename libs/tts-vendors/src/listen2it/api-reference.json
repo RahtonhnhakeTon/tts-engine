@@ -1,7 +1,5 @@
 {
-  "admin": {
-
-  },
+  "admin": {},
   "workspace": {
     "generate": "/v2/tts/sync"
   }

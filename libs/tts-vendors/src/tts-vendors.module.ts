@@ -5,8 +5,6 @@ import { Listen2itModule } from './listen2it/listen2it.module';
 @Module({
   providers: [TtsVendorsService],
   exports: [TtsVendorsService],
-  imports: [
-      Listen2itModule,
-  ],
+  imports: [Listen2itModule],
 })
 export class TtsVendorsModule {}

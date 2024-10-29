@@ -1,9 +1,9 @@
-import {HTTPMethods} from "fastify";
-import {AxiosBasicCredentials, AxiosHeaders} from "axios";
+import { HTTPMethods } from 'fastify';
+import { AxiosBasicCredentials, AxiosHeaders } from 'axios';
 
 export class SendRequestOptions {
-    method?: HTTPMethods;
-    payload?: any;
-    headers?: AxiosHeaders;
-    authorization?: AxiosBasicCredentials;
+  method?: HTTPMethods;
+  payload?: any;
+  headers?: AxiosHeaders;
+  authorization?: AxiosBasicCredentials;
 }

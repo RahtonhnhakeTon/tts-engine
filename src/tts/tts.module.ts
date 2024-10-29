@@ -4,6 +4,6 @@ import { TtsService } from './tts.service';
 
 @Module({
   controllers: [TtsController],
-  providers: [TtsService]
+  providers: [TtsService],
 })
 export class TtsModule {}

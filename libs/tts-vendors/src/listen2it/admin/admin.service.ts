@@ -3,7 +3,7 @@ import {Client} from "@app/tts-vendors/commons/client";
 import {HttpService} from "@nestjs/axios";
 import {ConfigService} from "@nestjs/config";
 import {SendRequestOptions} from "@app/tts-vendors/commons/types";
-import {AxiosHeaders} from "axios/index";
+import {AxiosHeaders} from 'axios';
 
 @Injectable()
 export class AdminService extends Client{
