@@ -1,5 +1,10 @@
 {
-  "admin": {},
+  "admin": {
+    "workspace": {
+      "default": "/admin/workspace",
+      "get_multiple": "/admin/workspaces"
+    }
+  },
   "workspace": {
     "generate": "/v2/tts/sync"
   }

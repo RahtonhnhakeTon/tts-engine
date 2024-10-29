@@ -10,7 +10,7 @@ const WORKSPACE_SPEECH_PLANS = ['standard', 'neural'] as const;
 
 export type WorkspaceSpeechPlans = (typeof WORKSPACE_SPEECH_PLANS)[number];
 
-export class l2i_CreateWorkspaceDto {
+export class l2i_CreateOrEditWorkspaceDto {
   @IsNotEmpty()
   name: string;
 
