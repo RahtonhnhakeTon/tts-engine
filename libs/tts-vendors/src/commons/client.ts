@@ -1,10 +1,10 @@
 import { SendRequestOptions } from '@app/tts-vendors/commons/types';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
+import { validate } from 'class-validator';
 import { join } from 'path';
 import { lastValueFrom } from 'rxjs';
-import {validate} from "class-validator";
 
 @Injectable()
 export class Client {
@@ -23,31 +23,42 @@ export class Client {
   }
 
   protected async _send(pathname: string, options: SendRequestOptions) {
-    const response = await lastValueFrom(
-      this.httpClient
-        .request({
-          url: new URL(
-            join(this._base_path, pathname),
-            this._base_url,
-          ).toString(),
-          method: options.method || 'get',
-          data: options.payload || null,
-          signal: this.abortController.signal,
-          headers: options.headers,
-          auth: options.authorization,
-        } as AxiosRequestConfig)
-        .pipe(),
-    );
+    try {
+      const response = await lastValueFrom(
+        this.httpClient
+          .request({
+            url: new URL(
+              join(this._base_path, pathname),
+              this._base_url,
+            ).toString(),
+            method: options.method || 'get',
+            data: options.payload || null,
+            signal: this.abortController.signal,
+            headers: options.headers,
+            auth: options.authorization,
+          } as AxiosRequestConfig)
+          .pipe(),
+      );
 
-    return response.data;
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        console.log(
+          `API ${err.config.method} ${pathname} failed with status ${err.status}` +
+            `\n${JSON.stringify(err.response.data)}`,
+        );
+      } else console.log(err);
+
+      return {};
+    }
   }
 
   protected async _is_body_valid(body: any) {
-      const errors = await validate(body);
-      if (errors.length > 0) {
-          console.log("validation failed. errors: ", errors);
-          return false;
-      }
-      return true;
+    const errors = await validate(body);
+    if (errors.length > 0) {
+      console.log('validation failed. errors: ', errors);
+      return false;
+    }
+    return true;
   }
 }

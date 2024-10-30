@@ -1,13 +1,16 @@
 import { Client } from '@app/tts-vendors/commons/client';
 import { SendRequestOptions } from '@app/tts-vendors/commons/types';
-import { l2i_CreateOrEditWorkspaceDto } from '@app/tts-vendors/listen2it/admin/admin.dto';
+import {
+  l2i_CreateOrEditWorkspaceDto,
+  l2i_Workspace,
+  l2i_WorkspaceCreatedDto,
+} from '@app/tts-vendors/listen2it/admin/admin.dto';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosHeaders } from 'axios';
 import { join } from 'path';
 import { admin as adminApiReference } from '../api-reference.json';
-import { validate } from 'class-validator';
 
 @Injectable()
 export class AdminService extends Client {
@@ -27,45 +30,90 @@ export class AdminService extends Client {
     }
   }
 
-  async createWorkspace(body: l2i_CreateOrEditWorkspaceDto) {
-    if(! (await this._is_body_valid(body)))
-      return false;
+  async createWorkspace(
+    body: l2i_CreateOrEditWorkspaceDto,
+  ): Promise<l2i_WorkspaceCreatedDto> {
+    if (!(await this._is_body_valid(body))) return null;
 
     const response = await this._send(adminApiReference.workspace.default, {
       method: 'post',
       payload: body,
     });
 
-    if(response.success) {
-      return response.data;
+    if (response.success) {
+      return response.data as l2i_WorkspaceCreatedDto;
     }
 
-    return false;
+    return null;
   }
 
-  deleteWorkspace(id: string) {
-    return this._send(join(adminApiReference.workspace.default, id), {
-      method: 'delete',
-    });
+  async deleteWorkspace(id: string): Promise<boolean> {
+    const response = await this._send(
+      join(adminApiReference.workspace.default, id),
+      {
+        method: 'delete',
+      },
+    );
+
+    return response.success;
   }
 
-  editWorkspace(body: l2i_CreateOrEditWorkspaceDto) {
-    return this._send(adminApiReference.workspace.default, {
-      method: 'put',
-      payload: body,
-    });
+  async editWorkspace(
+    id: string,
+    body: l2i_CreateOrEditWorkspaceDto,
+  ): Promise<boolean> {
+    if (!(await this._is_body_valid(body))) return false;
+
+    const response = await this._send(
+      join(adminApiReference.workspace.default, id),
+      {
+        method: 'put',
+        payload: body,
+      },
+    );
+
+    return response.success;
   }
 
-  getWorkspace(id: string) {
-    return this._send(join(adminApiReference.workspace.default, id), {
-      method: 'get',
-    });
+  async getWorkspace(id: string): Promise<l2i_Workspace> {
+    const response = await this._send(
+      join(adminApiReference.workspace.default, id),
+      {
+        method: 'get',
+      },
+    );
+
+    if (response.success) {
+      return response.data;
+    }
+    return null;
   }
 
-  getAllWorkspaces() {
-    return this._send(adminApiReference.workspace.get_multiple, {
-      method: 'get',
-    });
+  async getAllWorkspaces(): Promise<l2i_Workspace[]> {
+    const response = await this._send(
+      adminApiReference.workspace.get_multiple,
+      {
+        method: 'get',
+      },
+    );
+
+    if (response.success) {
+      return response.data.map((workspace) =>
+        this._transform_response_to_workspace(workspace),
+      );
+    }
+    return [];
+  }
+
+  protected _transform_response_to_workspace(response: any) {
+    if (response.created_at) {
+      response.created_at = new Date(response.created_at);
+      response.updated_at = new Date(response.updated_at);
+      response.usage.created_at = new Date(response.created_at);
+      response.usage.updated_at = new Date(response.updated_at);
+    }
+
+    return response as l2i_Workspace;
   }
 
   protected async _send(pathname: string, options: SendRequestOptions) {

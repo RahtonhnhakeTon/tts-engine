@@ -8,7 +8,7 @@ export default () => ({
       prod: '',
       sandbox: '/staging',
     },
-    apiKey: process.env.LISTEN2IT_API_KEY,
+    apiKey: process.env.LISTEN2IT_PARENT_API_KEY,
     parentWorkspaceID: process.env.LISTEN2IT_PARENT_WORKSPACE_ID,
     request: {
       timeout: parseInt(process.env.LISTEN2IT_TIMEOUT_IN_MS) || 5000,
