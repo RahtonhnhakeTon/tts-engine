@@ -5,6 +5,7 @@ import {
   l2i_Workspace,
   l2i_WorkspaceCreatedDto,
 } from '@app/tts-vendors/listen2it/admin/admin.dto';
+import { WorkspaceModel } from '@app/tts-vendors/listen2it/workspace/workspace.model';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -17,6 +18,7 @@ export class AdminService extends Client {
   constructor(
     private readonly http: HttpService,
     private readonly config: ConfigService,
+    private readonly workspaceModel: WorkspaceModel,
   ) {
     super(http);
     const settings = config.get('listen2it');
@@ -41,7 +43,11 @@ export class AdminService extends Client {
     });
 
     if (response.success) {
-      return response.data as l2i_WorkspaceCreatedDto;
+      const successResponse = response.data as l2i_WorkspaceCreatedDto;
+      const workspace = await this.getWorkspace(successResponse.id);
+
+      this.workspaceModel.save(workspace);
+      return successResponse;
     }
 
     return null;
@@ -71,6 +77,11 @@ export class AdminService extends Client {
         payload: body,
       },
     );
+
+    if (response.success) {
+      const workspace = await this.getWorkspace(id);
+      this.workspaceModel.save(workspace);
+    }
 
     return response.success;
   }
@@ -112,6 +123,7 @@ export class AdminService extends Client {
       response.usage.created_at = new Date(response.created_at);
       response.usage.updated_at = new Date(response.updated_at);
     }
+    response.account_id = parseInt(response.account_id);
 
     return response as l2i_Workspace;
   }

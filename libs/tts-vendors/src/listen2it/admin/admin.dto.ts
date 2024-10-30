@@ -61,7 +61,7 @@ export class l2i_Workspace {
   email: string;
   first_name: string;
   last_name: string;
-  account_id: string;
+  account_id: number;
   usage: {
     characters_used: number;
     created_at: Date;
