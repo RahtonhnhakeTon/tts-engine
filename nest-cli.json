@@ -15,6 +15,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/tts-vendors/tsconfig.lib.json"
       }
+    },
+    "vpaas-essentials": {
+      "type": "library",
+      "root": "libs/vpaas-essentials",
+      "entryFile": "index",
+      "sourceRoot": "libs/vpaas-essentials/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/vpaas-essentials/tsconfig.lib.json"
+      }
     }
   }
 }

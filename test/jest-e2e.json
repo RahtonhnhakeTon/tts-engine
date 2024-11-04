@@ -12,6 +12,8 @@
   },
   "moduleNameMapper": {
     "@app/tts-vendors/(.*)": "<rootDir>/../libs/tts-vendors/src/$1",
-    "@app/tts-vendors": "<rootDir>/../libs/tts-vendors/src"
+    "@app/tts-vendors": "<rootDir>/../libs/tts-vendors/src",
+    "@app/vpaas-essentials/(.*)": "<rootDir>/../libs/vpaas-essentials/src/$1",
+    "@app/vpaas-essentials": "<rootDir>/../libs/vpaas-essentials/src"
   }
 }

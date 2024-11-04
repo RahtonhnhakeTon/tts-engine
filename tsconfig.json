@@ -24,6 +24,12 @@
       ],
       "@app/tts-vendors/*": [
         "libs/tts-vendors/src/*"
+      ],
+      "@app/vpaas-essentials": [
+        "libs/vpaas-essentials/src"
+      ],
+      "@app/vpaas-essentials/*": [
+        "libs/vpaas-essentials/src/*"
       ]
     }
   }

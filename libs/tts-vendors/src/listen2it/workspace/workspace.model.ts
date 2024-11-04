@@ -65,7 +65,11 @@ export class WorkspaceModel {
         ? workspace.usage.updated_at
         : workspace.updated_at;
 
-    return;
+    // @ts-ignore
+    if (doc._id) {
+      return this.document.updateOne({ workspaceID: workspace.id }, doc);
+    }
+    return this.document.create(doc);
   }
 
   async findByAccountID(accountID: number) {

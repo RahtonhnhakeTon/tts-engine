@@ -21,7 +21,7 @@ export class AdminService extends Client {
     private readonly workspaceModel: WorkspaceModel,
   ) {
     super(http);
-    const settings = config.get('listen2it');
+    const settings = config.get('ttsVendors.listen2it');
 
     if (settings.baseURL.prod) {
       this.baseURL = settings.baseURL.prod;
@@ -134,11 +134,11 @@ export class AdminService extends Client {
     }
     options.headers.set(
       'x-api-key',
-      this.config.get<string>('listen2it.apiKey'),
+      this.config.get<string>('ttsVendors.listen2it.apiKey'),
     );
     options.headers.set(
       'workspace-id',
-      this.config.get<string>('listen2it.parentWorkspaceID'),
+      this.config.get<string>('ttsVendors.listen2it.parentWorkspaceID'),
     );
 
     return super._send(pathname, options);

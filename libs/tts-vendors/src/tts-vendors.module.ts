@@ -2,11 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule, MongooseModuleFactoryOptions } from '@nestjs/mongoose';
 import { Listen2itModule } from './listen2it/listen2it.module';
-import { TtsVendorsService } from './tts-vendors.service';
 
 @Module({
-  providers: [TtsVendorsService],
-  exports: [TtsVendorsService],
   imports: [
     Listen2itModule,
     MongooseModule.forRootAsync({
@@ -14,8 +11,9 @@ import { TtsVendorsService } from './tts-vendors.service';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        const settings =
-          config.get<MongooseModuleFactoryOptions>('listen2it.database');
+        const settings = config.get<MongooseModuleFactoryOptions>(
+          'ttsVendors.listen2it.database',
+        );
 
         return { ...settings };
       },
