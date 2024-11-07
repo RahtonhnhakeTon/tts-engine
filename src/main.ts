@@ -36,18 +36,18 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
 
-  const config = new DocumentBuilder()
+  const docBuilderConfig = new DocumentBuilder()
     .setTitle('TTS Engine')
     .setDescription('APIs for the pluggable TTS adapter')
     .setVersion('1.0')
-    .addTag('tts')
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  const documentFactory = () =>
+    SwaggerModule.createDocument(app, docBuilderConfig);
   SwaggerModule.setup('api', app, documentFactory);
 
   await app.register(FastifyListRoutes);
   await app.listen({
-    port: 3000,
+    port: configService.get<number>('app.port'),
     host: '0.0.0.0',
   });
 

@@ -4,6 +4,7 @@ import { InterceptorsModule } from '@app/vpaas-essentials/interceptors/intercept
 import { LoggerModule } from '@app/vpaas-essentials/logger/logger.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import AppConfiguration from '../config/app.config.js';
 import LoggerConfiguration from '../config/logger.config.js';
 import VendorConfiguration from '../config/vendors.config.js';
 import { AppController } from './app.controller';
@@ -21,7 +22,7 @@ import { UserModule } from './user/user.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env', '.development.env'],
-      load: [VendorConfiguration, LoggerConfiguration],
+      load: [AppConfiguration, VendorConfiguration, LoggerConfiguration],
     }),
     UserModule,
   ],

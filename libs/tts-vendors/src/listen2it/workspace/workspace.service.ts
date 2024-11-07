@@ -26,7 +26,7 @@ export class WorkspaceService extends Client {
     super(http, logger);
     const settings = config.get('ttsVendors.listen2it');
 
-    if (settings.baseURL.prod) {
+    if (config.get<string>('app.deployment') === 'production') {
       this.baseURL = settings.baseURL.prod;
       this.basePath = settings.basePath.prod;
     } else {
