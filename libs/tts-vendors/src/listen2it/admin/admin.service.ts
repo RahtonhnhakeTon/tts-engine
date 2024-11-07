@@ -47,9 +47,8 @@ export class AdminService extends Client {
 
     if (response.success) {
       const successResponse = response.data as l2i_WorkspaceCreatedDto;
-      const workspace = await this.getWorkspace(successResponse.id);
+      this.getWorkspace(successResponse.id);
 
-      this.workspaceModel.save(workspace);
       return successResponse;
     } else {
       switch (response.msg) {
@@ -90,8 +89,7 @@ export class AdminService extends Client {
     );
 
     if (response.success) {
-      const workspace = await this.getWorkspace(id);
-      this.workspaceModel.save(workspace);
+      this.getWorkspace(id);
     }
 
     return response.success;
@@ -106,6 +104,7 @@ export class AdminService extends Client {
     );
 
     if (response.success) {
+      this.workspaceModel.cache(response.data);
       return response.data;
     }
     return null;

@@ -4,7 +4,7 @@ import {
 } from '@app/tts-vendors/listen2it/admin/admin.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectModel, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Model } from 'mongoose';
+import { HydratedDocument, Model, UpdateQuery } from 'mongoose';
 
 export type WorkspaceDocument = HydratedDocument<Workspace>;
 
@@ -46,7 +46,7 @@ export class WorkspaceModel {
     this.document.ensureIndexes();
   }
 
-  async save(workspace: l2i_Workspace) {
+  async cache(workspace: l2i_Workspace) {
     let doc = (await this.document.findOne({
       workspaceID: workspace.id,
     })) as Workspace;
@@ -79,5 +79,9 @@ export class WorkspaceModel {
   async deleteById(workspaceID: string) {
     const result = await this.document.deleteOne({ workspaceID });
     return !!result;
+  }
+
+  async updateById(workspaceID: string, modifications: UpdateQuery<Workspace>) {
+    return this.document.updateOne({ workspaceID }, modifications);
   }
 }

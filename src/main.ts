@@ -9,6 +9,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import FastifyListRoutes from 'fastify-list-routes';
 import { AppModule } from './app.module';
 
@@ -34,6 +35,15 @@ async function bootstrap() {
   app.enableVersioning({
     type: VersioningType.URI,
   });
+
+  const config = new DocumentBuilder()
+    .setTitle('TTS Engine')
+    .setDescription('APIs for the pluggable TTS adapter')
+    .setVersion('1.0')
+    .addTag('tts')
+    .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, documentFactory);
 
   await app.register(FastifyListRoutes);
   await app.listen({

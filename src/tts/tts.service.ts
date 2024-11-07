@@ -30,6 +30,7 @@ export class TtsService {
 
         return this.l2iWorkspaceService.generateTTS({
           text: body.text,
+          language: body.language,
         });
       case 'aws':
       case 'google':

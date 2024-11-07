@@ -15,3 +15,10 @@ export class l2i_GenerateTtsDto {
 
   language?: string;
 }
+
+export class l2i_TtsGeneratedDto {
+  url: string;
+  characters_used: number;
+  total_characters_used: number;
+  total_characters_remaining: number;
+}

@@ -1,6 +1,9 @@
 import { Client } from '@app/tts-vendors/commons/client';
 import { SendRequestOptions } from '@app/tts-vendors/commons/types';
-import { l2i_GenerateTtsDto } from '@app/tts-vendors/listen2it/workspace/workspace.dto';
+import {
+  l2i_GenerateTtsDto,
+  l2i_TtsGeneratedDto,
+} from '@app/tts-vendors/listen2it/workspace/workspace.dto';
 import {
   Workspace,
   WorkspaceModel,
@@ -55,7 +58,6 @@ export class WorkspaceService extends Client {
       throw new Error('Workspace not set.');
     }
     body.voice_id = 'Raveena';
-    body.language = 'en-IN';
     body.type = 'ssml';
 
     if (!(await this._is_body_valid(body))) return null;
@@ -66,7 +68,13 @@ export class WorkspaceService extends Client {
     });
 
     if (response.success) {
-      return response.data;
+      const successResponse: l2i_TtsGeneratedDto = response.data;
+      this.workspaceModel.updateById(this._workspace.workspaceID, {
+        usage: successResponse.total_characters_used,
+        updatedAt: new Date(),
+      });
+
+      return successResponse;
     }
     return null;
   }
