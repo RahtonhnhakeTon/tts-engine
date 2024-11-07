@@ -2,7 +2,7 @@ import { SendRequestOptions } from '@app/tts-vendors/commons/types';
 import { LoggerService } from '@app/vpaas-essentials/logger/logger.service';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { validate } from 'class-validator';
 import { join } from 'path';
 import { lastValueFrom } from 'rxjs';
@@ -40,7 +40,7 @@ export class Client {
             signal: this.abortController.signal,
             headers: options.headers,
             auth: options.authorization,
-          } as AxiosRequestConfig)
+          } as unknown)
           .pipe(),
       );
 
