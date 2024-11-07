@@ -56,7 +56,7 @@ export class WorkspaceModel {
 
     doc.workspaceID = workspace.id;
     doc.apiKey = workspace.api_key;
-    doc.accountID = workspace.account_id;
+    doc.accountID = Math.floor(workspace.account_id);
     doc.maxCharacters = workspace.max_characters;
     doc.usage = workspace.usage.characters_used;
     doc.createdAt = workspace.created_at;
@@ -74,5 +74,10 @@ export class WorkspaceModel {
 
   async findByAccountID(accountID: number) {
     return this.document.findOne({ accountID });
+  }
+
+  async deleteById(workspaceID: string) {
+    const result = await this.document.deleteOne({ workspaceID });
+    return !!result;
   }
 }

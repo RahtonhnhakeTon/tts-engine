@@ -5,6 +5,7 @@ import {
   Workspace,
   WorkspaceModel,
 } from '@app/tts-vendors/listen2it/workspace/workspace.model';
+import { LoggerService } from '@app/vpaas-essentials/logger/logger.service';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -17,8 +18,9 @@ export class WorkspaceService extends Client {
     private readonly http: HttpService,
     private readonly config: ConfigService,
     private readonly workspaceModel: WorkspaceModel,
+    private readonly logger: LoggerService,
   ) {
-    super(http);
+    super(http, logger);
     const settings = config.get('ttsVendors.listen2it');
 
     if (settings.baseURL.prod) {
@@ -37,9 +39,15 @@ export class WorkspaceService extends Client {
   }
 
   async setWorkspaceByAccountId(accountID: number) {
-    this.workspace = (await this.workspaceModel.findByAccountID(
+    const workspace = (await this.workspaceModel.findByAccountID(
       accountID,
     )) as Workspace;
+
+    if (workspace) {
+      this._workspace = workspace;
+      return true;
+    }
+    return false;
   }
 
   async generateTTS(body: l2i_GenerateTtsDto) {

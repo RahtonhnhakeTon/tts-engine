@@ -1,3 +1,4 @@
+import { GlobalErrorFilter } from '@app/vpaas-essentials/filters/global-error.filter';
 import { HttpExceptionFilter } from '@app/vpaas-essentials/filters/http-exception.filter';
 import { LoggerInterceptor } from '@app/vpaas-essentials/interceptors/logger.interceptor';
 import { LoggerService } from '@app/vpaas-essentials/logger/logger.service';
@@ -23,8 +24,10 @@ async function bootstrap() {
     },
   );
   const configService = app.get<ConfigService>(ConfigService);
+  const loggerService = new LoggerService(configService);
 
-  app.useLogger(new LoggerService(configService));
+  app.useLogger(loggerService);
+  app.useGlobalFilters(new GlobalErrorFilter(loggerService));
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new LoggerInterceptor(configService));
   app.useGlobalPipes(new ValidationPipe());

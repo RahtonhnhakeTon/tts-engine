@@ -9,6 +9,7 @@ import VendorConfiguration from '../config/vendors.config.js';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TtsModule } from './tts/tts.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TtsModule } from './tts/tts.module';
       envFilePath: ['.env', '.development.env'],
       load: [VendorConfiguration, LoggerConfiguration],
     }),
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

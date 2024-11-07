@@ -1,4 +1,5 @@
 import { SendRequestOptions } from '@app/tts-vendors/commons/types';
+import { LoggerService } from '@app/vpaas-essentials/logger/logger.service';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -12,7 +13,10 @@ export class Client {
   private _base_url: string;
   private _base_path: string;
 
-  constructor(private readonly httpClient: HttpService) {}
+  constructor(
+    private readonly httpClient: HttpService,
+    private readonly log: LoggerService,
+  ) {}
 
   set baseURL(value: string) {
     this._base_url = value;
@@ -43,12 +47,21 @@ export class Client {
       return response.data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        console.log(
-          `API ${err.config.method} ${pathname} failed with status ${err.status}` +
+        this.log.error(
+          `API (${err.config.method}) ${pathname} failed with status ${err.status}` +
             `\n${JSON.stringify(err.response.data)}`,
+          err,
+          'HttpClient',
+          '_send',
         );
-      } else console.log(err);
-
+        return err.response.data;
+      } else
+        this.log.error(
+          'An error occurred while hitting API',
+          err,
+          'HttpClient',
+          '_send',
+        );
       return {};
     }
   }

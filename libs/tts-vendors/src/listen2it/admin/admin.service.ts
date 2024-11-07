@@ -5,7 +5,9 @@ import {
   l2i_Workspace,
   l2i_WorkspaceCreatedDto,
 } from '@app/tts-vendors/listen2it/admin/admin.dto';
+import { AccountIdAlreadyExistsException } from '@app/tts-vendors/listen2it/admin/admin.exceptions';
 import { WorkspaceModel } from '@app/tts-vendors/listen2it/workspace/workspace.model';
+import { LoggerService } from '@app/vpaas-essentials/logger/logger.service';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -19,8 +21,9 @@ export class AdminService extends Client {
     private readonly http: HttpService,
     private readonly config: ConfigService,
     private readonly workspaceModel: WorkspaceModel,
+    private readonly logger: LoggerService,
   ) {
-    super(http);
+    super(http, logger);
     const settings = config.get('ttsVendors.listen2it');
 
     if (settings.baseURL.prod) {
@@ -48,6 +51,11 @@ export class AdminService extends Client {
 
       this.workspaceModel.save(workspace);
       return successResponse;
+    } else {
+      switch (response.msg) {
+        case 'pilot number already exists':
+          throw new AccountIdAlreadyExistsException();
+      }
     }
 
     return null;
@@ -61,6 +69,9 @@ export class AdminService extends Client {
       },
     );
 
+    if (response.success) {
+      this.workspaceModel.deleteById(id);
+    }
     return response.success;
   }
 

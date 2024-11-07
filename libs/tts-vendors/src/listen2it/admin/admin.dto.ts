@@ -6,10 +6,10 @@ export const WorkspaceMaxCharacterOptions = {
   '20m': 20000000,
 } as const;
 
-const WORKSPACE_MAX_CHARACTER_OPTIONS = Object.values(
+export const WORKSPACE_MAX_CHARACTER_OPTIONS = Object.values(
   WorkspaceMaxCharacterOptions,
 );
-const WORKSPACE_SPEECH_PLANS = ['standard', 'neural'] as const;
+export const WORKSPACE_SPEECH_PLANS = ['standard', 'neural'] as const;
 
 export type WorkspaceSpeechPlan = (typeof WORKSPACE_SPEECH_PLANS)[number];
 export type WorkspaceMaxCharacterOption =
@@ -24,7 +24,7 @@ export class l2i_CreateOrEditWorkspaceDto {
   max_characters: number;
 
   @IsNotEmpty()
-  account_id: string;
+  account_id: number;
 
   @IsNotEmpty()
   @IsEmail()
