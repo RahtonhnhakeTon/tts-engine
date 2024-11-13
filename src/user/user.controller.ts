@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './user.dto';
 import { UserService } from './user.service';
@@ -19,8 +27,14 @@ export class UserController {
   }
 
   @Get(':id/listen2it')
-  async getL2iWorkspace(@Param('id') id: string) {
-    const workspace = await this.userService.getL2iWorkspace(parseInt(id));
+  async getL2iWorkspace(
+    @Param('id') id: string,
+    @Query('detailed') showAll: boolean,
+  ) {
+    const workspace = await this.userService.getL2iWorkspace(
+      parseInt(id),
+      showAll,
+    );
 
     return {
       success: true,

@@ -106,7 +106,7 @@ export class UserService {
     }
   }
 
-  async getL2iWorkspace(userID: number) {
+  async getL2iWorkspace(userID: number, getAllDetails: boolean) {
     const workspace = await this.l2iWorkspaceModel.findByAccountID(userID);
     if (!workspace) {
       this.logger.debug(
@@ -115,12 +115,29 @@ export class UserService {
         'getL2iWorkspace',
       );
       throw new HttpException(
-        `Provided user id is not integrated for listen2it.`,
+        {
+          message: `Provided user id is not integrated for listen2it.`,
+          data: {},
+        },
         HttpStatus.NOT_FOUND,
       );
     }
+    let userDetails: any = {};
+    if (getAllDetails) {
+      const l2iWorkspace = await this.l2iAdminService.getWorkspace(
+        workspace.workspaceID,
+      );
+      userDetails = {
+        name:
+          l2iWorkspace.first_name +
+          (l2iWorkspace.last_name ? ' ' + l2iWorkspace.last_name : ''),
+        email: l2iWorkspace.email,
+        speechPlan: l2iWorkspace.plan_id,
+      };
+    }
 
     return {
+      ...userDetails,
       userId: userID,
       maxCharacters: workspace.maxCharacters,
       usage: workspace.usage,
