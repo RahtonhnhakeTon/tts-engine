@@ -1,0 +1,76 @@
+:root {
+    --dark: #1e1f22;
+    --lil-dark: #2b2d30;
+    --white: #fff;
+    --sub-white: #c6c2c2;
+    --blue-dark: #394a6c;
+    --blue-highlight: #5389f5;
+    --red-dark: #6e232b;
+    --red-highlight: #d31127;
+    --green-dark: #126e12;
+    --green-highlight: #26c626;
+    --yellow-dark: #5e4807;
+    --yellow-highlight: #f0c35b;
+}
+
+body {
+    background: var(--lil-dark);
+}
+.topbar-wrapper {
+    width:69px;
+    height:auto;
+}
+.topbar-wrapper svg {
+    visibility: hidden;
+}
+.swagger-ui .info .title {
+    color: var(--white);
+}
+.swagger-ui .info p {
+    color: var(--sub-white);
+}
+.swagger-ui .topbar {
+    background-color: var(--dark);
+}
+.swagger-ui .opblock.opblock-get {
+    background-color: var(--blue-dark);
+    border-color: var(--blue-highlight);
+}
+.swagger-ui .opblock.opblock-get .opblock-summary-method {
+    background: var(--blue-highlight);
+}
+.swagger-ui .opblock.opblock-post {
+    background-color: var(--green-dark);
+    border-color: var(--green-highlight);
+}
+.swagger-ui .opblock.opblock-post .opblock-summary-method {
+    background: var(--green-highlight);
+}
+.swagger-ui .opblock.opblock-delete {
+    background-color: var(--red-dark);
+    border-color: var(--red-highlight);
+}
+.swagger-ui .opblock.opblock-delete .opblock-summary-method {
+    background: var(--red-highlight);
+}
+.swagger-ui .opblock.opblock-patch {
+    background-color: var(--yellow-dark);
+    border-color: var(--yellow-highlight);
+}
+.swagger-ui .opblock.opblock-patch .opblock-summary-method {
+    background: var(--yellow-highlight);
+}
+.swagger-ui .opblock.opblock-put {
+    background-color: var(--yellow-dark);
+    border-color: var(--yellow-highlight);
+}
+.swagger-ui .opblock.opblock-put .opblock-summary-method {
+    background: var(--yellow-highlight);
+}
+.swagger-ui .btn.authorize {
+    border-color: var(--blue-highlight);
+    color: var(--white);
+}
+.swagger-ui .btn.authorize svg {
+    fill: var(--blue-highlight);
+}

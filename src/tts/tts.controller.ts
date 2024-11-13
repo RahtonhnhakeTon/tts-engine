@@ -1,7 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { GenerateTtsDto } from './tts.dto';
 import { TtsService } from './tts.service';
 
+@ApiTags('TTS')
 @Controller({
   path: 'tts',
   version: '1',
