@@ -7,14 +7,10 @@ import {
   IsIn,
   IsNotEmpty,
   IsNumber,
-  ValidateIf,
+  IsOptional,
 } from 'class-validator';
-import { TTS_VENDORS, TtsVendors } from '../tts/tts.dto';
 
-export class CreateUserDto {
-  @IsIn(TTS_VENDORS)
-  vendor: TtsVendors;
-
+export class CreateL2iWorkspaceDto {
   @IsNotEmpty()
   name: string;
 
@@ -29,13 +25,35 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @ValidateIf((obj: any, value: string) => obj.vendor === 'listen2it')
   @IsIn(Object.values(WorkspaceMaxCharacterOptions))
   maxCharacters: number;
 
-  @ValidateIf((obj: any, value: string) => obj.vendor === 'listen2it')
   @IsIn(WORKSPACE_SPEECH_PLANS)
   speechPlan: string;
 
   traceId?: string;
 }
+
+export class EditL2iWorkspaceDto {
+  @IsOptional()
+  @IsNotEmpty()
+  name: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsOptional()
+  @IsIn(Object.values(WorkspaceMaxCharacterOptions))
+  maxCharacters: number;
+
+  @IsOptional()
+  @IsIn(WORKSPACE_SPEECH_PLANS)
+  speechPlan: string;
+
+  traceId?: string;
+}
+
+export type CreateUserDto = CreateL2iWorkspaceDto;
+export type EditUserDto = EditL2iWorkspaceDto;

@@ -6,6 +6,7 @@
     }
   },
   "workspace": {
-    "generate": "/v2/tts/sync"
+    "generate": "/v2/tts/sync",
+    "voices": "/voices"
   }
 }

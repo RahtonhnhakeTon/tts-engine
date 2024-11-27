@@ -9,6 +9,12 @@ export default () => ({
         prod: '',
         sandbox: '/staging',
       },
+      previewVoiceUrl: {
+        prod: '',
+        sandbox:
+          'https://l2itstaging-l2itaudiopreviewbucketf5cc65f1' +
+          '-ppqsvyg9zy96.s3.amazonaws.com',
+      },
       apiKey: process.env.LISTEN2IT_PARENT_API_KEY,
       parentWorkspaceID: process.env.LISTEN2IT_PARENT_WORKSPACE_ID,
       request: {

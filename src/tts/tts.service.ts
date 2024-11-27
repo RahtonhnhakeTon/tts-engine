@@ -1,6 +1,7 @@
 import { WorkspaceService } from '@app/tts-vendors/listen2it/workspace/workspace.service';
 import { LoggerService } from '@app/vpaas-essentials/logger/logger.service';
-import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { FastifyReply } from 'fastify';
 import { GenerateTtsDto } from './tts.dto';
 
 @Injectable()
@@ -10,7 +11,7 @@ export class TtsService {
     private readonly logger: LoggerService,
   ) {}
 
-  async generate(@Body() body: GenerateTtsDto) {
+  async generate(body: GenerateTtsDto) {
     switch (body.vendor) {
       case 'listen2it':
         if (
@@ -38,6 +39,26 @@ export class TtsService {
           'This feature is not implemented yet',
           HttpStatus.NOT_IMPLEMENTED,
         );
+    }
+  }
+
+  async streamL2iPreview(path: string, response: FastifyReply) {
+    try {
+      const fileResponse = await this.l2iWorkspaceService.previewVoice(path);
+      response.raw.setHeader(
+        'Content-Type',
+        fileResponse.headers['content-type'] as string,
+      );
+      response.raw.setHeader(
+        'Content-Length',
+        fileResponse.headers['content-length'] as string,
+      );
+      response.raw.setHeader('Content-Disposition', 'inline');
+
+      fileResponse.data.pipe(response.raw);
+      response.raw.on('close', () => response.raw.end());
+    } catch (error) {
+      throw new HttpException('File not found', HttpStatus.NOT_FOUND);
     }
   }
 }

@@ -5,83 +5,78 @@ import {
 import { AccountIdAlreadyExistsException } from '@app/tts-vendors/listen2it/admin/admin.exceptions';
 import { AdminService } from '@app/tts-vendors/listen2it/admin/admin.service';
 import { WorkspaceModel } from '@app/tts-vendors/listen2it/workspace/workspace.model';
+import { WorkspaceService } from '@app/tts-vendors/listen2it/workspace/workspace.service';
 import { LoggerService } from '@app/vpaas-essentials/logger/logger.service';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './user.dto';
+import { CreateUserDto, EditUserDto } from './user.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly logger: LoggerService,
     private readonly l2iAdminService: AdminService,
+    private readonly l2iWorkspaceService: WorkspaceService,
     private readonly l2iWorkspaceModel: WorkspaceModel,
   ) {}
 
-  async create(body: CreateUserDto) {
-    switch (body.vendor) {
-      case 'listen2it':
-        if (await this.l2iWorkspaceModel.findByAccountID(body.userId)) {
-          this.logger.debug(
-            `listen2it workspace for user id: ${body.userId} already exists`,
-            UserService.name,
-            'create',
-          );
-          throw new HttpException(
-            `Provided user id is already integrated for listen2it.`,
-            HttpStatus.NOT_ACCEPTABLE,
-          );
-        }
-        const nameParts = body.name.split(' ');
-        let firstName = nameParts[0];
-        let lastName = '';
-        if (nameParts.length > 2) {
-          lastName = nameParts[nameParts.length - 1];
-          firstName = nameParts.slice(0, nameParts.length - 1).join(' ');
-        } else if (nameParts.length === 2) {
-          lastName = nameParts[1];
-        }
-
-        const createWorkspacePayload = new l2i_CreateOrEditWorkspaceDto();
-        createWorkspacePayload.name = 'client-workspace-' + body.clientId;
-        createWorkspacePayload.account_id = body.userId;
-        createWorkspacePayload.email = body.email;
-        createWorkspacePayload.first_name = firstName;
-        createWorkspacePayload.last_name = lastName;
-        createWorkspacePayload.max_characters = body.maxCharacters;
-        createWorkspacePayload.speech_plan = body.speechPlan;
-        createWorkspacePayload.can_use_lite = true;
-        createWorkspacePayload.can_use_standard = true;
-        createWorkspacePayload.can_use_premium = true;
-        createWorkspacePayload.can_use_cloning = true;
-
-        this.logger.log(
-          `listen2it workspace for user id: ${body.userId} being created`,
-          UserService.name,
-          'create',
-        );
-        let response: l2i_WorkspaceCreatedDto = null;
-        try {
-          response = await this.l2iAdminService.createWorkspace(
-            createWorkspacePayload,
-          );
-        } catch (err) {
-          if (err instanceof AccountIdAlreadyExistsException) {
-            createWorkspacePayload.account_id =
-              body.userId + Math.ceil(Math.random() * 10000) / 10000;
-            response = await this.l2iAdminService.createWorkspace(
-              createWorkspacePayload,
-            );
-          } else throw err;
-        }
-        return !!response;
-      case 'aws':
-      case 'google':
-        throw new HttpException(
-          'This feature is not implemented yet',
-          HttpStatus.NOT_IMPLEMENTED,
-        );
+  async createL2iWorkspace(body: CreateUserDto) {
+    if (await this.l2iWorkspaceModel.findByAccountID(body.userId)) {
+      this.logger.debug(
+        `listen2it workspace for user id: ${body.userId} already exists`,
+        UserService.name,
+        'create',
+      );
+      throw new HttpException(
+        `Provided user id is already integrated for listen2it.`,
+        HttpStatus.NOT_ACCEPTABLE,
+      );
     }
+    const nameParts = body.name.split(' ');
+    let firstName = nameParts[0];
+    let lastName = '';
+    if (nameParts.length > 2) {
+      lastName = nameParts[nameParts.length - 1];
+      firstName = nameParts.slice(0, nameParts.length - 1).join(' ');
+    } else if (nameParts.length === 2) {
+      lastName = nameParts[1];
+    }
+
+    const createWorkspacePayload = new l2i_CreateOrEditWorkspaceDto();
+    createWorkspacePayload.name = 'client-workspace-' + body.clientId;
+    createWorkspacePayload.account_id = body.userId;
+    createWorkspacePayload.email = body.email;
+    createWorkspacePayload.first_name = firstName;
+    createWorkspacePayload.last_name = lastName;
+    createWorkspacePayload.max_characters = body.maxCharacters;
+    createWorkspacePayload.speech_plan = body.speechPlan;
+    createWorkspacePayload.can_use_lite = true;
+    createWorkspacePayload.can_use_standard = true;
+    createWorkspacePayload.can_use_premium = true;
+    createWorkspacePayload.can_use_cloning = true;
+
+    this.logger.log(
+      `listen2it workspace for user id: ${body.userId} being created`,
+      UserService.name,
+      'create',
+    );
+    let response: l2i_WorkspaceCreatedDto = null;
+    try {
+      response = await this.l2iAdminService.createWorkspace(
+        createWorkspacePayload,
+      );
+    } catch (err) {
+      if (err instanceof AccountIdAlreadyExistsException) {
+        createWorkspacePayload.account_id =
+          body.userId + Math.ceil(Math.random() * 10000) / 10000;
+        response = await this.l2iAdminService.createWorkspace(
+          createWorkspacePayload,
+        );
+      } else throw err;
+    }
+    return !!response;
   }
+
+  async editL2iWorkspace(userID: number, body: EditUserDto) {}
 
   async deleteL2iWorkspace(userID: number) {
     const workspace = await this.l2iWorkspaceModel.findByAccountID(userID);
@@ -143,5 +138,22 @@ export class UserService {
       usage: workspace.usage,
       updatedAt: workspace.updatedAt,
     };
+  }
+
+  async getL2iVoices(userID) {
+    if (await this.l2iWorkspaceService.setWorkspaceByAccountId(userID)) {
+      this.logger.log(
+        `workspace for user id: ${userID} located successfully`,
+        UserService.name,
+        'getL2iVoices',
+      );
+    } else {
+      throw new HttpException(
+        `Provided user id is not integrated for listen2it. Please setup the account using v1/user/setup API`,
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+    }
+
+    return await this.l2iWorkspaceService.getVoices();
   }
 }

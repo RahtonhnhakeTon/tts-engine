@@ -13,6 +13,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosHeaders } from 'axios';
+import { lastValueFrom } from 'rxjs';
 import { workspace as workspaceApiReference } from '../api-reference.json';
 
 @Injectable()
@@ -79,7 +80,38 @@ export class WorkspaceService extends Client {
     return null;
   }
 
-  protected async _send(pathname: string, options: SendRequestOptions) {
+  async getVoices() {
+    if (!this._workspace) {
+      throw new Error('Workspace not set.');
+    }
+
+    const response = await this._send(workspaceApiReference.voices);
+    if (response.success) {
+      return response.data;
+    }
+    return null;
+  }
+
+  async previewVoice(urlpath: string) {
+    const baseUrl =
+      this.config.get<string>('app.deployment') === 'production'
+        ? this.config.get<string>('ttsVendors.listen2it.previewVoiceUrl.prod')
+        : this.config.get<string>(
+            'ttsVendors.listen2it.previewVoiceUrl.sandbox',
+          );
+    const url = new URL(urlpath, baseUrl);
+
+    return lastValueFrom(
+      this.http
+        .request({
+          url: url.toString(),
+          responseType: 'stream',
+        })
+        .pipe(),
+    );
+  }
+
+  protected async _send(pathname: string, options: SendRequestOptions = {}) {
     if (!options.headers) {
       options.headers = new AxiosHeaders();
     }
