@@ -2,7 +2,7 @@ import * as NestCommons from '@nestjs/common';
 import { Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { TtsVendors } from '../tts/tts.dto';
-import { CreateUserDto, EditUserDto } from './user.dto';
+import { CreateL2iWorkspaceDto, EditL2iWorkspaceDto } from './user.dto';
 import { UserService } from './user.service';
 
 @ApiTags('Users')
@@ -16,7 +16,7 @@ export class UserController {
   @NestCommons.Post('setup/:vendor')
   async create(
     @NestCommons.Param('vendor') vendor: TtsVendors,
-    @NestCommons.Body() body: CreateUserDto,
+    @NestCommons.Body() body: CreateL2iWorkspaceDto,
   ) {
     switch (vendor) {
       case 'listen2it':
@@ -81,7 +81,7 @@ export class UserController {
   async edit(
     @NestCommons.Param('id') id: string,
     @NestCommons.Param('vendor') vendor: TtsVendors,
-    @NestCommons.Body() body: EditUserDto,
+    @NestCommons.Body() body: EditL2iWorkspaceDto,
   ) {
     switch (vendor) {
       case 'listen2it':
@@ -98,7 +98,7 @@ export class UserController {
   }
 
   @Get(':id/:vendor/voices')
-  async generate(
+  async getVoices(
     @NestCommons.Param('id') id: string,
     @NestCommons.Param('vendor') vendor: TtsVendors,
   ) {
