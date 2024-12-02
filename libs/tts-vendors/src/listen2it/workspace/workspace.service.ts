@@ -58,7 +58,6 @@ export class WorkspaceService extends Client {
     if (!this._workspace) {
       throw new Error('Workspace not set.');
     }
-    body.voice_id = 'Raveena';
     body.type = 'ssml';
 
     if (!(await this._is_body_valid(body))) return null;
