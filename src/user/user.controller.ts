@@ -1,22 +1,32 @@
-import * as NestCommons from '@nestjs/common';
-import { Get } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { TtsVendors } from '../tts/tts.dto';
 import { CreateL2iWorkspaceDto, EditL2iWorkspaceDto } from './user.dto';
 import { UserService } from './user.service';
 
 @ApiTags('Users')
-@NestCommons.Controller({
+@Controller({
   path: 'user',
   version: '1',
 })
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @NestCommons.Post('setup/:vendor')
+  @Post('setup/:vendor')
   async create(
-    @NestCommons.Param('vendor') vendor: TtsVendors,
-    @NestCommons.Body() body: CreateL2iWorkspaceDto,
+    @Param('vendor') vendor: TtsVendors,
+    @Body() body: CreateL2iWorkspaceDto,
   ) {
     switch (vendor) {
       case 'listen2it':
@@ -25,18 +35,18 @@ export class UserController {
         };
       case 'aws':
       case 'google':
-        throw new NestCommons.HttpException(
+        throw new HttpException(
           'This vendor is not integrated yet',
-          NestCommons.HttpStatus.NOT_IMPLEMENTED,
+          HttpStatus.NOT_IMPLEMENTED,
         );
     }
   }
 
-  @NestCommons.Get(':id/:vendor')
+  @Get(':id/:vendor')
   async get(
-    @NestCommons.Param('id') id: string,
-    @NestCommons.Param('vendor') vendor: TtsVendors,
-    @NestCommons.Query('detailed') showAll: boolean,
+    @Param('id') id: string,
+    @Param('vendor') vendor: TtsVendors,
+    @Query('detailed') showAll: boolean,
   ) {
     switch (vendor) {
       case 'listen2it':
@@ -51,18 +61,15 @@ export class UserController {
         };
       case 'aws':
       case 'google':
-        throw new NestCommons.HttpException(
+        throw new HttpException(
           'This vendor is not integrated yet',
-          NestCommons.HttpStatus.NOT_IMPLEMENTED,
+          HttpStatus.NOT_IMPLEMENTED,
         );
     }
   }
 
-  @NestCommons.Delete(':id/:vendor')
-  async delete(
-    @NestCommons.Param('id') id: string,
-    @NestCommons.Param('vendor') vendor: TtsVendors,
-  ) {
+  @Delete(':id/:vendor')
+  async delete(@Param('id') id: string, @Param('vendor') vendor: TtsVendors) {
     switch (vendor) {
       case 'listen2it':
         return {
@@ -70,18 +77,18 @@ export class UserController {
         };
       case 'aws':
       case 'google':
-        throw new NestCommons.HttpException(
+        throw new HttpException(
           'This vendor is not integrated yet',
-          NestCommons.HttpStatus.NOT_IMPLEMENTED,
+          HttpStatus.NOT_IMPLEMENTED,
         );
     }
   }
 
-  @NestCommons.Put(':id/:vendor')
+  @Put(':id/:vendor')
   async edit(
-    @NestCommons.Param('id') id: string,
-    @NestCommons.Param('vendor') vendor: TtsVendors,
-    @NestCommons.Body() body: EditL2iWorkspaceDto,
+    @Param('id') id: string,
+    @Param('vendor') vendor: TtsVendors,
+    @Body() body: EditL2iWorkspaceDto,
   ) {
     switch (vendor) {
       case 'listen2it':
@@ -90,17 +97,17 @@ export class UserController {
         };
       case 'aws':
       case 'google':
-        throw new NestCommons.HttpException(
+        throw new HttpException(
           'This vendor is not integrated yet',
-          NestCommons.HttpStatus.NOT_IMPLEMENTED,
+          HttpStatus.NOT_IMPLEMENTED,
         );
     }
   }
 
   @Get(':id/:vendor/voices')
   async getVoices(
-    @NestCommons.Param('id') id: string,
-    @NestCommons.Param('vendor') vendor: TtsVendors,
+    @Param('id') id: string,
+    @Param('vendor') vendor: TtsVendors,
   ) {
     switch (vendor) {
       case 'listen2it':
@@ -110,9 +117,9 @@ export class UserController {
         };
       case 'aws':
       case 'google':
-        throw new NestCommons.HttpException(
+        throw new HttpException(
           'This vendor is not integrated yet',
-          NestCommons.HttpStatus.NOT_IMPLEMENTED,
+          HttpStatus.NOT_IMPLEMENTED,
         );
     }
   }
