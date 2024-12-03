@@ -5,7 +5,10 @@ import {
   l2i_Workspace,
   l2i_WorkspaceCreatedDto,
 } from '@app/tts-vendors/listen2it/admin/admin.dto';
-import { AccountIdAlreadyExistsException } from '@app/tts-vendors/listen2it/admin/admin.exceptions';
+import {
+  AccountIdAlreadyExistsException,
+  EmailAlreadyUsedException,
+} from '@app/tts-vendors/listen2it/admin/admin.exceptions';
 import { WorkspaceModel } from '@app/tts-vendors/listen2it/workspace/workspace.model';
 import { LoggerService } from '@app/vpaas-essentials/logger/logger.service';
 import { HttpService } from '@nestjs/axios';
@@ -38,7 +41,8 @@ export class AdminService extends Client {
   async createWorkspace(
     body: l2i_CreateOrEditWorkspaceDto,
   ): Promise<l2i_WorkspaceCreatedDto> {
-    if (!(await this._is_body_valid(body))) return null;
+    if (!(await this._is_body_valid(body)))
+      throw new Error('Create listen2it Workspace Payload invalid');
 
     const response = await this._send(adminApiReference.workspace.default, {
       method: 'post',
@@ -54,6 +58,8 @@ export class AdminService extends Client {
       switch (response.msg) {
         case 'pilot number already exists':
           throw new AccountIdAlreadyExistsException();
+        case 'email id already exists':
+          throw new EmailAlreadyUsedException();
       }
     }
 
@@ -78,7 +84,8 @@ export class AdminService extends Client {
     id: string,
     body: l2i_CreateOrEditWorkspaceDto,
   ): Promise<boolean> {
-    if (!(await this._is_body_valid(body))) return false;
+    if (!(await this._is_body_valid(body)))
+      throw new Error('Edit listen2it Workspace Payload invalid');
 
     const response = await this._send(
       join(adminApiReference.workspace.default, id),

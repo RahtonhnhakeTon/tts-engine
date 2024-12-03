@@ -2,7 +2,10 @@ import {
   l2i_CreateOrEditWorkspaceDto,
   l2i_WorkspaceCreatedDto,
 } from '@app/tts-vendors/listen2it/admin/admin.dto';
-import { AccountIdAlreadyExistsException } from '@app/tts-vendors/listen2it/admin/admin.exceptions';
+import {
+  AccountIdAlreadyExistsException,
+  EmailAlreadyUsedException, L2iException,
+} from '@app/tts-vendors/listen2it/admin/admin.exceptions';
 import { AdminService } from '@app/tts-vendors/listen2it/admin/admin.service';
 import { WorkspaceModel } from '@app/tts-vendors/listen2it/workspace/workspace.model';
 import { WorkspaceService } from '@app/tts-vendors/listen2it/workspace/workspace.service';
@@ -33,7 +36,7 @@ export class UserService {
     }
     const nameParts = body.name.split(' ');
     let firstName = nameParts[0];
-    let lastName = '';
+    let lastName = '-';
     if (nameParts.length > 2) {
       lastName = nameParts[nameParts.length - 1];
       firstName = nameParts.slice(0, nameParts.length - 1).join(' ');
@@ -71,6 +74,8 @@ export class UserService {
         response = await this.l2iAdminService.createWorkspace(
           createWorkspacePayload,
         );
+      } else if (err instanceof L2iException) {
+        throw new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE);
       } else throw err;
     }
     return !!response;
