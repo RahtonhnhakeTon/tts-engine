@@ -5,12 +5,14 @@ import { LoggerModule } from '@app/vpaas-essentials/logger/logger.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import AppConfiguration from '../config/app.config.js';
+import KafkaConfiguration from '../config/kafka.config.js';
 import LoggerConfiguration from '../config/logger.config.js';
 import VendorConfiguration from '../config/vendors.config.js';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TtsModule } from './tts/tts.module';
 import { UserModule } from './user/user.module';
+import { AudioModule } from './audio/audio.module';
 
 @Module({
   imports: [
@@ -22,9 +24,15 @@ import { UserModule } from './user/user.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env', '.development.env'],
-      load: [AppConfiguration, VendorConfiguration, LoggerConfiguration],
+      load: [
+        AppConfiguration,
+        VendorConfiguration,
+        LoggerConfiguration,
+        KafkaConfiguration,
+      ],
     }),
     UserModule,
+    AudioModule,
   ],
   controllers: [AppController],
   providers: [AppService],

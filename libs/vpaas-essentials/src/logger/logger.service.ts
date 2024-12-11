@@ -1,8 +1,13 @@
 import { ecsFormat } from '@elastic/ecs-winston-format';
 import { Injectable, LoggerService as LoggerInterface } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { logLevel } from 'kafkajs';
 import { createLogger, format, Logger, transports } from 'winston';
 import 'colors';
+import {
+  ConsoleTransportInstance,
+  FileTransportInstance,
+} from 'winston/lib/winston/transports';
 
 @Injectable()
 export class LoggerService implements LoggerInterface {
@@ -22,6 +27,7 @@ export class LoggerService implements LoggerInterface {
     debug: 'inverse green',
     verbose: 'dim magenta',
   };
+  static kafkaLogger = createLogger();
   context = 'Unknown';
   private readonly logger: Logger;
 
@@ -29,7 +35,7 @@ export class LoggerService implements LoggerInterface {
     this.logger = LoggerService.createLogger(this.config.get('logger.files'));
   }
 
-  static createLogger(filenames: any): Logger {
+  static createLogger(filenames: any = null): Logger {
     const cliFormatter = () => {
       return format.printf(
         ({ level, message, label, timestamp, context, error, state }) => {
@@ -47,10 +53,8 @@ export class LoggerService implements LoggerInterface {
         },
       );
     };
-
-    return createLogger({
-      levels: LoggerService.levels,
-      transports: [
+    const logTransports: (ConsoleTransportInstance | FileTransportInstance)[] =
+      [
         new transports.Console({
           level: 'verbose',
           format: format.combine(
@@ -64,13 +68,32 @@ export class LoggerService implements LoggerInterface {
             cliFormatter(),
           ),
         }),
+      ];
+    if (filenames.error) {
+      logTransports.push(
         new transports.File({
           level: 'error',
           format: ecsFormat(),
           filename: filenames.error,
         }),
-      ],
+      );
+    }
+
+    return createLogger({
+      levels: LoggerService.levels,
+      transports: logTransports,
     });
+  }
+
+  static kafkaLog(level: logLevel) {
+    return ({ namespace, level, label, log }) => {
+      const { message, ...extra } = log;
+      LoggerService.kafkaLogger.log({
+        level: kafkaJsToWinstonLogLevel(level),
+        message,
+        extra,
+      });
+    };
   }
 
   debug(
@@ -129,3 +152,17 @@ export class LoggerService implements LoggerInterface {
     this.logger.log('info', message, { context, label, state });
   }
 }
+
+const kafkaJsToWinstonLogLevel = (level: logLevel) => {
+  switch (level) {
+    case logLevel.ERROR:
+    case logLevel.NOTHING:
+      return 'error';
+    case logLevel.WARN:
+      return 'warn';
+    case logLevel.INFO:
+      return 'info';
+    case logLevel.DEBUG:
+      return 'debug';
+  }
+};
