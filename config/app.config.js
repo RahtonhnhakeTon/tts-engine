@@ -4,4 +4,7 @@ export default () => ({
     port: parseInt(process.env.APP_PORT) || 5000,
     deployment: process.env.APP_DEPLOYMET || 'staging',
   },
+  volumes: {
+    ttsStore: process.env.DEFAULT_TTS_STORE_PATH || '/Recording/',
+  },
 });

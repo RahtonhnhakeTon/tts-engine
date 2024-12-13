@@ -17,6 +17,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
 import { FastifyReply } from 'fastify';
+import { Audio } from '../audio/audio.schema';
+import { AudioService } from '../audio/audio.service';
 import { GenerateTtsDto, TtsVendors } from './tts.dto';
 import { TtsService } from './tts.service';
 
@@ -27,6 +29,7 @@ import { TtsService } from './tts.service';
 })
 export class TtsController implements OnModuleInit {
   constructor(
+    private readonly audioService: AudioService,
     private readonly ttsService: TtsService,
     private readonly consumerService: ConsumerService,
     private readonly logger: LoggerService,
@@ -79,6 +82,18 @@ export class TtsController implements OnModuleInit {
       voiceId: body.voiceId,
       userId: body.accountId,
     });
+
+    const filename = `${body.accountId}_${body.voiceId}_${ttsResponse.url.split('/').at(-1)}`;
+
+    const file = new Audio({
+      name: filename + '.raw',
+      path: this.config.get<string>('volumes.ttsStore'),
+    });
+
+    await this.audioService.fetchOverHTTP(file, ttsResponse.url);
+    await this.audioService.resampleForAsteriskStandards(file, filename);
+
+    return {};
   }
 
   @Post('create')
