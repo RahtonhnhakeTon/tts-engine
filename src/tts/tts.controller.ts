@@ -37,6 +37,8 @@ export class TtsController implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
+    if (!this.config.get<Boolean>('app.enableConsumer')) return;
+
     await this.consumerService.consume(async (payload) => {
       const messageObject = JSON.parse(payload.message.value.toString());
       try {

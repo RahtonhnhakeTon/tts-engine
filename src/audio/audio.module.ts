@@ -9,5 +9,6 @@ import { AudioService } from './audio.service';
     }),
   ],
   providers: [AudioService],
+  exports: [AudioService],
 })
 export class AudioModule {}

@@ -9,6 +9,7 @@ import { KafkaClient } from './kafka.client';
 
 @Injectable()
 export class ProducerService implements OnModuleInit, OnApplicationShutdown {
+  connected = false;
   private readonly producer = this.kafka.client.producer();
 
   constructor(
@@ -17,10 +18,18 @@ export class ProducerService implements OnModuleInit, OnApplicationShutdown {
   ) {}
 
   async onModuleInit() {
+    // await this.connect();
+  }
+
+  async connect() {
     await this.producer.connect();
+    this.connected = true;
   }
 
   async produce(topic: string, ...messages: Message[]) {
+    if (this.connected) {
+      await this.producer.connect();
+    }
     this.logger.debug(
       `Message Produced on ${topic} topic:`,
       ProducerService.name,
